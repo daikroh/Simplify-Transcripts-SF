@@ -7,15 +7,14 @@ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'meetings')\gexec
 
 CREATE TABLE IF NOT EXISTS records (
     record_id INTEGER PRIMARY KEY,
-    category VARCHAR(128),
-    video_src VARCHAR(128),
-    agenda_src VARCHAR(128),
+    view_id INTEGER,
     published_date TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS agendas (
     agenda_id UUID PRIMARY KEY,
     record_id INTEGER,
+    title VARCHAR(256),
     start_time INTEGER,
     end_time INTEGER,
     summary TEXT,
@@ -28,3 +27,7 @@ CREATE TABLE IF NOT EXISTS agendas (
 
 -- List tables to check
 \dt
+
+-- Load data
+\COPY records(record_id, view_id, published_date) FROM 'records.csv' WITH (FORMAT CSV, HEADER TRUE, DELIMITER ',');
+\COPY agendas FROM 'records.csv' WITH (FORMAT CSV, HEADER TRUE, DELIMITER ',');
