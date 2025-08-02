@@ -18,12 +18,34 @@ To deactivate it:
 deactivate
 ```
 
-We'll use pip3 to install the packages for Python. If your system doesn't have pip3 installed, you can run the following in bash:
+To install the dependencies:
 ```
-sudo apt install python3-pip
+pip install -r /path/to/requirements.txt
 ```
 
-With the virtual environment set up, we can install django
+To update list of dependencies:
 ```
-pip3 install django
+pip freeze > requirements.txt
+```
+
+To run the server:
+```
+cd simplify_transcripts
+python3 manage.py runserver
+```
+
+## Create PostgreSQL Database
+If you don't have PostgreSQL set up yet:
+Install Postgres.app and add to path:
+```
+export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
+source ~/.zshrc
+```
+
+The credentials in settings.py will be the configurations you use in the Postgres.app.
+
+To verify, create a superuser and enter the Django admin page:
+```
+python manage.py createsuperuser
+python manage.py runserver
 ```

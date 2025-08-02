@@ -1,6 +1,7 @@
 # Environments
-.env
+**/.env
 demo/
+**/__pycache__
 
 # Text backup files
 *.bak
