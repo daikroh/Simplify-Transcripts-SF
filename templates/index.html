@@ -11,8 +11,8 @@
                         Simply Transcripts SF
                     </h1>
 
-                    <div class="text-center">
-                        <form class="usa-search usa-search--big" role="search" style="max-width: 600px; margin: 0 auto;">
+                    <div class="text-center margin-bottom-4">
+                        <form class="usa-search usa-search--big" role="search" id="search-form" style="max-width: 600px; margin: 0 auto;">
                             <label class="usa-sr-only" for="search-field">Search transcripts</label>
                             <input class="usa-input" id="search-field" type="search" name="search" placeholder="Search SF meeting transcripts...">
                             <button class="usa-button" type="submit">
@@ -21,9 +21,59 @@
                         </form>
                     </div>
 
+                    <div id="video-container" class="text-center margin-top-4" style="display: none;">
+                        <div class="usa-card">
+                            <div class="usa-card__container">
+                                <div class="usa-card__header">
+                                    <h2 class="usa-card__heading">SF Government Meeting</h2>
+                                </div>
+                                <div class="usa-card__body">
+                                    <div id="video-embed-wrapper" class="margin-bottom-2">
+                                    </div>
+                                    <button class="usa-button usa-button--unstyled" id="hide-video-btn" type="button">
+                                        Hide Video
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchForm = document.getElementById('search-form');
+            const hideVideoBtn = document.getElementById('hide-video-btn');
+            const videoContainer = document.getElementById('video-container');
+            const videoEmbedWrapper = document.getElementById('video-embed-wrapper');
+
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const embedElement = document.createElement('embed');
+                embedElement.width = '720px';
+                embedElement.height = '480px';
+                embedElement.frameborder = '0';
+                embedElement.allowfullscreen = 'true';
+                embedElement.src = '//sanfrancisco.granicus.com/player/clip/50523?view_id=10&redirect=true&stoptime=21600&autostart=720&entrytime=3600&stoptime=21600&autostart=0&embed=1';
+                embedElement.style.maxWidth = '100%';
+                embedElement.style.height = 'auto';
+
+                videoEmbedWrapper.innerHTML = '';
+                videoEmbedWrapper.appendChild(embedElement);
+
+                videoContainer.style.display = 'block';
+                videoContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+
+            hideVideoBtn.addEventListener('click', function() {
+                videoContainer.style.display = 'none';
+                videoEmbedWrapper.innerHTML = '';
+            });
+        });
+    </script>
 </main>
 {% endblock %}
