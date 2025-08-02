@@ -1,7 +1,6 @@
 print(">>> Importing...")
 
 import whisperx
-import os
 import torch
 import torchaudio
 from pyannote.audio import Pipeline
