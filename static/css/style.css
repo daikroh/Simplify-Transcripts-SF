@@ -114,7 +114,7 @@ h2, h3, h4, h5, h6 {
 .nav-home {
     color: var(--sf-white);
     text-decoration: none;
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     font-weight: 600;
     padding: 0.5rem 1rem;
     border-radius: 4px;
@@ -142,10 +142,19 @@ h2, h3, h4, h5, h6 {
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .sf-nav-item:hover {
     background: rgba(255, 255, 255, 0.2);
+    color: var(--sf-white);
+    text-decoration: none;
+}
+
+.sf-nav-item:focus {
+    outline: 2px solid var(--sf-white);
+    outline-offset: 2px;
 }
 
 a, .usa-link {
