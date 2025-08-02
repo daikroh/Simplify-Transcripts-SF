@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'simplify_transcripts.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-db_name = 'records'
+db_name = 'meetings'
 user = 'postgres'
 password = ''
 port = '5432'
