@@ -15,11 +15,11 @@
     <header class="sf-nav-header">
         <div class="grid-container">
             <nav class="sf-nav-menu">
-                <a href="https://sanfrancisco.granicus.com/ViewPublisher.php?view_id=10" class="sf-gov-graph">
-                    SF Gov Structure
+                <a href="{% url 'home' %}" class="nav-home">
+                    Simply Transcripts SF 
                 </a>
                 <div class="sf-nav-items">
-                    <div class="sf-nav-item">Placeholder 1</div>
+                    <div class="sf-nav-item">San Francisco Government TV</div>
                     <div class="sf-nav-item">Placeholder 2</div>
                     <div class="sf-nav-item">Placeholder 3</div>
                 </div>
@@ -30,5 +30,7 @@
     {% block content %}{% endblock %}
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uswds/3.13.0/js/uswds.min.js"></script>
+    {% comment %} Uncomment the line below if you have a search.js file {% endcomment %}
+    {% comment %} <script src="{% static 'js/search.js' %}"></script> {% endcomment %}
 </body>
 </html>
