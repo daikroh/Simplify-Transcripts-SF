@@ -10,11 +10,12 @@ import csv
 import re
 from datetime import datetime
 
+
 # Function to scrape the main page for records
 def scrape_main_page(url, csv_filename="records.csv"):
     """Scrape the main page for records and save to CSV"""
     response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
+    soup = BeautifulSoup(response.text, "html.parser")
     rows = soup.select("table.sortable tbody tr")
     records = []
 
@@ -44,6 +45,7 @@ def scrape_main_page(url, csv_filename="records.csv"):
         writer.writerow(["record_id", "view_id", "published_date"])
         writer.writerows(records)
 
+
 # Function to scrape a specific video page for agenda items
 def scrape_video_page(url, csv_filename="agendas.csv"):
     """Scrape a video page for agenda items and save to CSV"""
@@ -53,7 +55,7 @@ def scrape_video_page(url, csv_filename="agendas.csv"):
 
     # Fetch the page content
     response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
+    soup = BeautifulSoup(response.text, "html.parser")
 
     # Find the section with id='index' and grab agenda items
     index_section = soup.find("section", {"id": "index"})
@@ -68,19 +70,23 @@ def scrape_video_page(url, csv_filename="agendas.csv"):
             agenda_id = item.get("data-uid")
             title = item.get_text(strip=True)
             start_time = item.get("time")
-            
+
             # Determine end_time (time of next item)
             if i + 1 < len(agenda_items):
                 end_time = agenda_items[i + 1].get("time")
             else:
                 end_time = "999999"  # Arbitrary end time for the last item
-            
+
             writer.writerow([agenda_id, record_id, title, start_time, end_time])
+
 
 def main():
     scrape_main_page("https://sanfrancisco.granicus.com/ViewPublisher.php?view_id=10")
-    scrape_video_page("https://sanfrancisco.granicus.com/player/clip/50291?view_id=10&redirect=true")
+    scrape_video_page(
+        "https://sanfrancisco.granicus.com/player/clip/50291?view_id=10&redirect=true"
+    )
     print(">>> Scraping complete. Data saved to 'records.csv' and 'agendas.csv'.")
+
 
 if __name__ == "__main__":
     main()

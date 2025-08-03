@@ -13,6 +13,7 @@ from cerebras.cloud.sdk import Cerebras
 load_dotenv()
 client = Cerebras(api_key=os.environ.get("CEREBRAS_KEY"))
 
+
 # Function to summarize a meeting transcript using Cerebras Cloud API
 def summarize_with_cerebras(transcript: str, model="qwen-3-coder-480b") -> str:
     """Summarize a meeting transcript using Cerebras Cloud API"""
@@ -31,7 +32,7 @@ def summarize_with_cerebras(transcript: str, model="qwen-3-coder-480b") -> str:
     user_prompt = (
         "Please summarize the following meeting transcript. Do not include the words 'Summary:' or 'Meeting Summary'. Do not repeat the transcript text."
         "Do not mention anything about the existence of a transcript and provide a plain language paragraph summarizing what happened during the transcript"
-        "If you are not able to summarize or if it is too short/empty, reply with \"Summary not available.\":\n\n"
+        'If you are not able to summarize or if it is too short/empty, reply with "Summary not available.":\n\n'
         f"{transcript.strip()}"
     )
 
@@ -39,13 +40,13 @@ def summarize_with_cerebras(transcript: str, model="qwen-3-coder-480b") -> str:
         stream = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system_message},
-                {"role": "user", "content": user_prompt}
+                {"role": "user", "content": user_prompt},
             ],
             model=model,
             stream=True,
             max_completion_tokens=1024,
             temperature=0.7,
-            top_p=0.8
+            top_p=0.8,
         )
 
         summary = ""
@@ -56,20 +57,26 @@ def summarize_with_cerebras(transcript: str, model="qwen-3-coder-480b") -> str:
     except Exception as e:
         return f"[Error during summarization: {e}]"
 
+
 # Function to summarize a CSV file with transcripts
 def summarize_csv(input_csv: str, output_csv: str):
     """Read a CSV file with transcripts and write summaries to a new CSV file"""
-    with open(input_csv, newline='', encoding='utf-8') as infile, \
-         open(output_csv, "w", newline='', encoding='utf-8') as outfile:
+    with open(input_csv, newline="", encoding="utf-8") as infile, open(
+        output_csv, "w", newline="", encoding="utf-8"
+    ) as outfile:
 
         reader = csv.DictReader(infile)
-        fieldnames = [f if f != "transcript" else "summary_transcript" for f in reader.fieldnames]
+        fieldnames = [
+            f if f != "transcript" else "summary_transcript" for f in reader.fieldnames
+        ]
         writer = csv.DictWriter(outfile, fieldnames=fieldnames)
         writer.writeheader()
 
         for i, row in enumerate(reader, start=1):
             transcript = row.get("transcript", "")
-            print(f">>> Summarizing transcript {i} (agenda_id={row.get('agenda_id', 'N/A')})...")
+            print(
+                f">>> Summarizing transcript {i} (agenda_id={row.get('agenda_id', 'N/A')})..."
+            )
 
             try:
                 summary = summarize_with_cerebras(transcript)
@@ -82,6 +89,7 @@ def summarize_csv(input_csv: str, output_csv: str):
             writer.writerow(row)
 
         print(">>> All summaries complete.")
+
 
 # Example usage
 summarize_csv("agendas_with_transcripts.csv", "agendas_with_summary.csv")

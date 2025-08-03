@@ -22,7 +22,7 @@ class AgendaItem(models.Model):
     end_time = models.IntegerField()
     summary = models.TextField()
     transcript = models.TextField()
-    
+
     embeddings = VectorField(null=True, blank=True)
 
     def __str__(self):
