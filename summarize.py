@@ -30,7 +30,8 @@ def summarize_with_cerebras(transcript: str, model="qwen-3-coder-480b") -> str:
 
     user_prompt = (
         "Please summarize the following meeting transcript. Do not include the words 'Summary:' or 'Meeting Summary'. Do not repeat the transcript text."
-        "Do not mention anything about the existence of a transcript and provide a plain language paragraph summarizing what happened during the transcript:\n\n"
+        "Do not mention anything about the existence of a transcript and provide a plain language paragraph summarizing what happened during the transcript"
+        "If you are not able to summarize or if it is too short/empty, reply with \"Summary not available.\":\n\n"
         f"{transcript.strip()}"
     )
 

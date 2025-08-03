@@ -17,7 +17,7 @@ import csv
 import os
 
 # CONFIG
-AUDIO_FILE = "sanfrancisco_27e3a9ca-ed35-4520-a5c2-ccfee41a7671.mp3"
+AUDIO_FILE = "sanfrancisco_4f57e5cf-334b-48c4-9f3c-f3bd434850a2.mp3"
 AGENDA_FILE = "agendas.csv"
 OUTPUT_CSV = "agendas_with_transcripts.csv"
 MODEL_SIZE = "small"

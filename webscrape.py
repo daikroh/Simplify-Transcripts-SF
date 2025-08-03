@@ -79,7 +79,7 @@ def scrape_video_page(url, csv_filename="agendas.csv"):
 
 def main():
     scrape_main_page("https://sanfrancisco.granicus.com/ViewPublisher.php?view_id=10")
-    scrape_video_page("https://sanfrancisco.granicus.com/player/clip/50330?view_id=10&redirect=true")
+    scrape_video_page("https://sanfrancisco.granicus.com/player/clip/50291?view_id=10&redirect=true")
     print(">>> Scraping complete. Data saved to 'records.csv' and 'agendas.csv'.")
 
 if __name__ == "__main__":
