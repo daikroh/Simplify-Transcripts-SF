@@ -40,6 +40,126 @@
         </div>
     </div>
 
+    <style>
+        .split-view-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+            height: 600px;
+        }
+
+        .video-container {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .transcript-container {
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .transcript-content {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 500px;
+            background: #fafafa;
+            padding: 1rem;
+            border-radius: 4px;
+            line-height: 1.6;
+            font-family: 'Georgia', serif;
+        }
+
+        .transcript-content p {
+            margin-bottom: 1rem;
+        }
+
+        .timestamp {
+            color: #0066cc;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .speaker {
+            color: #d73502;
+            font-weight: bold;
+        }
+
+        .video-embed {
+            width: 100%;
+            height: 400px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .result-header {
+            background: #002B48;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+        }
+
+        .result-header h3 {
+            color: white;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .result-meta {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .back-to-results {
+            background: #495ED4;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .back-to-results:hover {
+            background: #394B5C;
+        }
+
+        @media (max-width: 768px) {
+            .split-view-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .video-container,
+            .transcript-container {
+                height: 300px;
+            }
+        }
+
+        .results-list {
+            display: block;
+        }
+
+        .results-list.hidden {
+            display: none;
+        }
+
+        .detailed-view {
+            display: none;
+        }
+
+        .detailed-view.visible {
+            display: block;
+        }
+    </style>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchForm = document.getElementById('search-form');
@@ -49,81 +169,112 @@
             const loadingDiv = document.getElementById('loading');
             const noResultsDiv = document.getElementById('no-results');
 
+            let currentResults = [];
+
             function formatTime(seconds) {
                 const minutes = Math.floor(seconds / 60);
                 const remainingSeconds = seconds % 60;
                 return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
             }
 
-            function createResultCard(result, index) {
-                const videoUrl = `https://sanfrancisco.granicus.com/player/clip/${result.record_id}?view_id=10&redirect=true&stoptime=${result.end_time}&entrytime=${result.start_time}&autostart=1`;
+            function parseTranscript(transcript) {
+                const lines = transcript.split('\n');
+                let formattedTranscript = '';
                 
-                const resultCard = document.createElement('div');
-                resultCard.className = 'usa-card margin-bottom-4';
-                resultCard.innerHTML = `
+                lines.forEach(line => {
+                    if (line.trim()) {
+                        const match = line.match(/^\(([^)]+)\)\s+([^:]+):\s*(.*)$/);
+                        if (match) {
+                            const timestamp = match[1];
+                            const speaker = match[2];
+                            const text = match[3];
+                            formattedTranscript += `<p><span class="timestamp">${timestamp}</span> <span class="speaker">${speaker}:</span> ${text}</p>`;
+                        } else {
+                            formattedTranscript += `<p>${line}</p>`;
+                        }
+                    }
+                });
+                
+                return formattedTranscript || transcript;
+            }
+
+            function createResultListItem(result, index) {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'usa-card margin-bottom-2';
+                resultItem.innerHTML = `
                     <div class="usa-card__container">
                         <div class="usa-card__header">
-                            <h3 class="usa-card__heading">${result.title}</h3>
+                            <h4 class="usa-card__heading">${result.title}</h4>
                         </div>
                         <div class="usa-card__body">
                             <div class="margin-bottom-2">
                                 <span class="sf-text-secondary">
-                                    <strong>Record ID:</strong> ${result.record_id}
+                                    <strong>Time:</strong> ${formatTime(result.start_time)} - ${formatTime(result.end_time)}
                                 </span>
                             </div>
                             <div class="margin-bottom-2">
                                 <span class="sf-text-secondary">
-                                    <strong>Time Range:</strong> ${formatTime(result.start_time)} - ${formatTime(result.end_time)}
+                                    ${result.summary.substring(0, 150)}...
                                 </span>
                             </div>
-                            <div class="margin-bottom-2">
-                                <span class="sf-text-secondary">
-                                    <strong>Summary:</strong> ${result.summary}
-                                </span>
-                            </div>
-                            <div class="margin-bottom-2">
-                                <button class="usa-button usa-button--secondary" 
-                                        onclick="toggleVideo(${index}, '${result.record_id}', ${result.start_time}, ${result.end_time})" 
-                                        id="toggle-btn-${index}">
-                                    Show Video
-                                </button>
-                                <a href="${videoUrl}" 
-                                   target="_blank" 
-                                   class="usa-button usa-button--outline margin-left-1">
-                                    Open in New Tab
-                                </a>
-                            </div>
-                            <div id="video-container-${index}" class="margin-top-2" style="display: none;">
-                                <div id="video-embed-${index}" class="text-center">
-                                </div>
-                            </div>
+                            <button class="usa-button" onclick="showDetailedView(${index})">
+                                View Video & Transcript
+                            </button>
                         </div>
                     </div>
                 `;
-                return resultCard;
+                return resultItem;
             }
 
-            window.toggleVideo = function(index, recordId, startTime, endTime) {
-                const videoContainer = document.getElementById(`video-container-${index}`);
-                const videoEmbed = document.getElementById(`video-embed-${index}`);
-                const toggleBtn = document.getElementById(`toggle-btn-${index}`);
+            function createDetailedView(result, index) {
+                const videoUrl = `//sanfrancisco.granicus.com/player/clip/${result.record_id}?view_id=10&redirect=true&stoptime=${result.end_time}&autostart=720&entrytime=${result.start_time}&autostart=1&embed=1`;
+                const externalUrl = `https://sanfrancisco.granicus.com/player/clip/${result.record_id}?view_id=10&redirect=true&stoptime=${result.end_time}&entrytime=${result.start_time}&autostart=1`;
                 
-                if (videoContainer.style.display === 'none') {
-                    if (videoEmbed.innerHTML.trim() === '') {
-                        const embedUrl = `//sanfrancisco.granicus.com/player/clip/${recordId}?view_id=10&redirect=true&stoptime=${endTime}&autostart=720&entrytime=${startTime}&stoptime=${endTime}&autostart=1&embed=1`;
-                        videoEmbed.innerHTML = `<embed width="720px" height="480px" frameborder="0" allowfullscreen="true" src="${embedUrl}"></embed>`;
-                    }
-                    
-                    videoContainer.style.display = 'block';
-                    toggleBtn.textContent = 'Hide Video';
-                    
-                    setTimeout(() => {
-                        videoContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 300);
-                } else {
-                    videoContainer.style.display = 'none';
-                    toggleBtn.textContent = 'Show Video';
-                }
+                return `
+                    <div class="detailed-view" id="detailed-view-${index}">
+                        <button class="back-to-results" onclick="showResultsList()">← Back to Results</button>
+                        
+                        <div class="result-header">
+                            <h3>${result.title}</h3>
+                            <div class="result-meta">
+                                <strong>Record ID:</strong> ${result.record_id} | 
+                                <strong>Time:</strong> ${formatTime(result.start_time)} - ${formatTime(result.end_time)} | 
+                                <a href="${externalUrl}" target="_blank" style="color: #fff; text-decoration: underline;">Open in New Tab</a>
+                            </div>
+                        </div>
+
+                        <div class="split-view-container">
+                            <div class="video-container">
+                                <h4 style="margin-top: 0;">Video</h4>
+                                <iframe class="video-embed" src="${videoUrl}" allowfullscreen></iframe>
+                            </div>
+                            
+                            <div class="transcript-container">
+                                <h4 style="margin-top: 0;">Transcript</h4>
+                                <div class="transcript-content">
+                                    ${parseTranscript(result.transcript)}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 4px;">
+                            <h5>Summary</h5>
+                            <p>${result.summary}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            window.showDetailedView = function(index) {
+                document.querySelector('.results-list').classList.add('hidden');
+                document.getElementById(`detailed-view-${index}`).classList.add('visible');
+            };
+
+            window.showResultsList = function() {
+                document.querySelector('.results-list').classList.remove('hidden');
+                document.querySelectorAll('.detailed-view').forEach(view => {
+                    view.classList.remove('visible');
+                });
             };
 
             async function searchAPI(query) {
@@ -164,18 +315,26 @@
                 const results = await searchAPI(query);
                 loadingDiv.style.display = 'none';
                 console.log(`Found ${results.length} results for "${query}"`);
-                console.log('Results:', results);
                 
                 if (results.length === 0) {
                     noResultsDiv.style.display = 'block';
                     return;
                 }
+
+                currentResults = results;
+                
+                const resultsListDiv = document.createElement('div');
+                resultsListDiv.className = 'results-list';
                 
                 results.forEach((result, index) => {
-                    const resultCard = createResultCard(result, index);
-                    resultsContainer.appendChild(resultCard);
+                    const resultItem = createResultListItem(result, index);
+                    resultsListDiv.appendChild(resultItem);
+                    
+                    const detailedViewHTML = createDetailedView(result, index);
+                    resultsContainer.insertAdjacentHTML('beforeend', detailedViewHTML);
                 });
                 
+                resultsContainer.insertBefore(resultsListDiv, resultsContainer.firstChild);
                 searchResults.style.display = 'block';
                 searchResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
