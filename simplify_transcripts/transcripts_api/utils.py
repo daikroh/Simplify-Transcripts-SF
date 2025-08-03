@@ -46,7 +46,7 @@ def search(query):
     agenda_items = (
         AgendaItem.objects.annotate(similarity=TrigramSimilarity("summary", query))
         .filter(similarity__gt=0.03)  # Similarity threshold
-        .order_by("-similarity")
+        .order_by("-similarity")    
     )
 
     if not agenda_items.exists():
@@ -67,7 +67,7 @@ def search(query):
     if not agenda_items.exists():
         agenda_items = AgendaItem.objects.filter(
             Q(title__icontains=query) | Q(summary__icontains=query)
-        ).select_related("record")
+        )
 
     results = combine_record_agenda(agenda_items)
     return Response(results)
