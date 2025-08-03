@@ -1,30 +1,34 @@
 from rest_framework import serializers
+from django.contrib.postgres.search import SearchVectorField
+from django.contrib.postgres.indexes import GinIndex
 from .models import Record, AgendaItem
+
 
 class RecordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Record
-        fields = ['record_id', 'view_id', 'published_date']
+        fields = ["record_id", "view_id", "published_date"]
+
 
 class AgendaItemSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = AgendaItem 
+        model = AgendaItem
         fields = [
-            'agenda_id',
-            'record_id',
-            'title',
-            'start_time',
-            'end_time',
-            'summary',
-            'transcript',
+            "agenda_id",
+            "record_id",
+            "title",
+            "start_time",
+            "end_time",
+            "summary",
+            "transcript",
         ]
+
 
 class RecordCombinedSerializer(serializers.ModelSerializer):
     agenda_items = AgendaItemSerializer(many=True, read_only=True)
 
     class Meta:
         model = Record
-        fields = ['record_id', 'view_id', 'published_date', 'agenda_items']
-
+        fields = ["record_id", "view_id", "published_date", "agenda_items"]
