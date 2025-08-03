@@ -30,4 +30,4 @@ CREATE TABLE IF NOT EXISTS agendas (
 
 -- Load data
 \COPY transcripts_api_record FROM 'records.csv' WITH (FORMAT CSV, HEADER TRUE, DELIMITER ',');
-\COPY transcripts_api_agenda FROM 'agendas.csv' WITH (FORMAT CSV, HEADER TRUE, DELIMITER ',');
+\COPY transcripts_api_agendaitem(agenda_id, record_id, title, start_time, end_time, summary, transcript) FROM 'agendas.csv' WITH (FORMAT CSV, HEADER TRUE, DELIMITER ',');

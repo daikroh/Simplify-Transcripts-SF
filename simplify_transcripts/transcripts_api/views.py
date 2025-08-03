@@ -72,9 +72,21 @@ class DirectSearch(APIView):
         if not query:
             return Response({'error': 'Missing q in query parameters'}, status=status.HTTP_400_BAD_REQUEST)
 
-        queryset = direct_query(query)
+        # queryset = direct_query(query)
         # agenda_items = AgendaItem.objects.filter(summary__icontains=query)
 
-        serializer = RecordSerializer(queryset, many=True)
+        # serializer = RecordSerializer(queryset, many=True)
         # serializer = AgendaItemSerializer(agenda_items, many=True)
-        return Response(serializer.data)
+
+        # serializer = RecordCombinedSerializer(queryset, many=True)
+
+        return direct_query(query)
+    
+class RecordListOfAgenda(APIView):
+    def get(self, request):
+        record_id = request.query_params.getlist('record_id')
+
+        if not record_id:
+            return Response({'error': 'Missing record_id query parameter'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        return record_list_of_agenda(record_id)

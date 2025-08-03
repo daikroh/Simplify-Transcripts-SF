@@ -21,4 +21,10 @@ class AgendaItemSerializer(serializers.ModelSerializer):
             'transcript',
         ]
 
+class RecordCombinedSerializer(serializers.ModelSerializer):
+    agenda_items = AgendaItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Record
+        fields = ['record_id', 'view_id', 'published_date', 'agenda_items']
 

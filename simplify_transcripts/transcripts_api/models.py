@@ -10,7 +10,7 @@ class Record(models.Model):
 
 class AgendaItem(models.Model):
     agenda_id = models.UUIDField(primary_key=True)
-    record = models.ForeignKey(Record, on_delete=models.CASCADE, name='record_id')
+    record = models.ForeignKey(Record, on_delete=models.CASCADE, related_name='agenda_items')
     title = models.CharField(max_length=256)
     start_time = models.IntegerField()
     end_time = models.IntegerField()

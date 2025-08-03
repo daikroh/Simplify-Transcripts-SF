@@ -2,6 +2,7 @@
 **/.env
 demo/
 **/__pycache__
+**/.DS_Store
 
 # Text backup files
 *.bak
