@@ -69,9 +69,10 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 print(f">>> DEVICE: {DEVICE}")
 
-print(">>> Trimming...")
-trim_audio(AUDIO_FILE, "trimmed.mp3", 600) # Adjust trim here if needed
-AUDIO_FILE = "trimmed.mp3"
+# # Trim audio if necessary
+# print(">>> Trimming...")
+# trim_audio(AUDIO_FILE, "trimmed.mp3", 600) # Adjust trim here if needed
+# AUDIO_FILE = "trimmed.mp3"
 
 # Starting benchmark
 bm_start_time = time.time()
