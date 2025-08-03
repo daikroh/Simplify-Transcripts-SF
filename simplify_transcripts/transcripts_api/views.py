@@ -4,6 +4,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import RecordSerializer, AgendaItemSerializer
+from .utils import *
 
 """
 API endpoints for Records
@@ -32,16 +33,6 @@ class RecordDetail(APIView):
 
         serializer = RecordSerializer(queryset, many=True)
         return Response(serializer.data)
-    
-class RecordUpdate(generics.RetrieveUpdateAPIView):
-    # API endpoint that returns a record to be updated
-    queryset = Record.objects.all()
-    serializer_class = RecordSerializer
-
-class RecordDelete(generics.RetrieveDestroyAPIView):
-    # API endpoint that returns a record to be deleted
-    queryset = Record.objects.all()
-    serializer_class = RecordSerializer
 
 """
 API endpoints for Agenda
@@ -71,12 +62,19 @@ class AgendaItemDetail(APIView):
         serializer = AgendaItemSerializer(queryset, many=True)
         return Response(serializer.data)
 
-class AgendaItemUpdate(generics.RetrieveUpdateAPIView):
-    # API endpoint that returns an agenda item to be updated
-    queryset = AgendaItem.objects.all()
-    serializer_class = AgendaItemSerializer
+"""
+API endpoints for Search
+"""
+class DirectSearch(APIView):
+    def get(self, request):
+        query = request.query_params.get('q')
 
-class AgendaItemDelete(generics.RetrieveDestroyAPIView):
-    # API endpoint that returns an agenda item to be deleted
-    queryset = AgendaItem.objects.all()
-    serializer_class = AgendaItemSerializer
+        if not query:
+            return Response({'error': 'Missing q in query parameters'}, status=status.HTTP_400_BAD_REQUEST)
+
+        queryset = direct_query(query)
+        # agenda_items = AgendaItem.objects.filter(summary__icontains=query)
+
+        serializer = RecordSerializer(queryset, many=True)
+        # serializer = AgendaItemSerializer(agenda_items, many=True)
+        return Response(serializer.data)

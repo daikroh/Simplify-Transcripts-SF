@@ -49,3 +49,9 @@ To verify, create a superuser and enter the Django admin page:
 python manage.py createsuperuser
 python manage.py runserver
 ```
+
+To create the databases:
+```
+python manage.py makemigrations
+python manage.py migrate
+```

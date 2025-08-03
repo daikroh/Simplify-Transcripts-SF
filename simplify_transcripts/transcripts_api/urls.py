@@ -8,5 +8,6 @@ urlpatterns = [
     path('record/', RecordDetail.as_view()),
     path('agenda-item-create/', AgendaItemCreate.as_view()),
     path('agenda-items/', AgendaItemList.as_view()),
-    path('agenda-item/', AgendaItemDetail.as_view())
+    path('agenda-item/', AgendaItemDetail.as_view()),
+    path('direct-search/', DirectSearch.as_view())
 ]
