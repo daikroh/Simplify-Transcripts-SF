@@ -1,3 +1,9 @@
+# summarize.py
+"""
+This script summarizes meeting transcripts using the Cerebras Cloud API.
+It reads a CSV file with transcripts, generates summaries, and writes them to a new CSV file.
+"""
+
 import csv
 import os
 from dotenv import load_dotenv
@@ -7,6 +13,7 @@ from cerebras.cloud.sdk import Cerebras
 load_dotenv()
 client = Cerebras(api_key=os.environ.get("CEREBRAS_KEY"))
 
+# Function to summarize a meeting transcript using Cerebras Cloud API
 def summarize_with_cerebras(transcript: str, model="qwen-3-coder-480b") -> str:
     """Summarize a meeting transcript using Cerebras Cloud API"""
 
@@ -48,7 +55,9 @@ def summarize_with_cerebras(transcript: str, model="qwen-3-coder-480b") -> str:
     except Exception as e:
         return f"[Error during summarization: {e}]"
 
+# Function to summarize a CSV file with transcripts
 def summarize_csv(input_csv: str, output_csv: str):
+    """Read a CSV file with transcripts and write summaries to a new CSV file"""
     with open(input_csv, newline='', encoding='utf-8') as infile, \
          open(output_csv, "w", newline='', encoding='utf-8') as outfile:
 

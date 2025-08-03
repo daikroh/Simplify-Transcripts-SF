@@ -1,3 +1,9 @@
+# transcribe_csv.py
+"""
+This script transcribes audio segments from a CSV file containing agenda items,
+aligns the transcriptions with the audio, and saves the results back to a new CSV file.
+"""
+
 import whisperx
 import torch
 import torchaudio
@@ -10,9 +16,7 @@ import time
 import csv
 import os
 
-# =========================
-# Configuration
-# =========================
+# CONFIG
 AUDIO_FILE = "sanfrancisco_27e3a9ca-ed35-4520-a5c2-ccfee41a7671.mp3"
 AGENDA_FILE = "agendas.csv"
 OUTPUT_CSV = "agendas_with_transcripts.csv"
@@ -21,15 +25,15 @@ HF_TOKEN = os.environ.get("HF_KEY")
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 TORCH_DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# =========================
-# Utility Functions
-# =========================
 
+# Helper Functions
+# Helper function to format timestamps
 def format_timestamp(seconds: float) -> str:
     """Convert seconds into HH:MM:SS format"""
     td = timedelta(seconds=int(seconds))
     return str(td)
 
+# Helper function to manually assign speakers to words
 def manual_assign_word_speakers(diarization, aligned_result):
     """Assign speaker labels to words and segments"""
     result = copy.deepcopy(aligned_result)
@@ -49,6 +53,7 @@ def manual_assign_word_speakers(diarization, aligned_result):
         segment["speaker"] = max(set(speakers), key=speakers.count) if speakers else "Unknown"
     return result
 
+# Helper function to trim audio using ffmpeg
 def trim_audio(input_file, output_file, start_sec, end_sec=None):
     """Trim audio file using ffmpeg"""
     command = ["ffmpeg", "-y", "-i", input_file, "-ss", str(start_sec)]
@@ -58,11 +63,13 @@ def trim_audio(input_file, output_file, start_sec, end_sec=None):
     command += ["-c", "copy", output_file]
     subprocess.run(command, check=True)
 
+# Helper function to get audio duration
 def get_audio_duration(file_path: str) -> float:
     """Get duration of audio file in seconds"""
     info = torchaudio.info(file_path)
     return info.num_frames / info.sample_rate
 
+# Helper function to load agenda segments from CSV and convert times
 def load_agenda_segments(csv_path: str, audio_duration: float) -> list:
     """Read agenda segments from CSV and convert times"""
     rows = []
@@ -76,6 +83,7 @@ def load_agenda_segments(csv_path: str, audio_duration: float) -> list:
             rows.append(row)
     return rows
 
+# Helper function to process a single agenda segment
 def process_segment(
     agenda_id: str,
     start: float,
@@ -112,6 +120,7 @@ def process_segment(
     os.remove(trimmed_file)
     return "\n".join(lines)
 
+# Helper function to save agenda rows with transcripts to CSV
 def save_agenda_with_transcripts(rows: list, out_csv: str):
     """Write updated rows to output CSV"""
     fieldnames = list(rows[0].keys())
@@ -120,10 +129,7 @@ def save_agenda_with_transcripts(rows: list, out_csv: str):
         writer.writeheader()
         writer.writerows(rows)
 
-# =========================
-# Main Logic
-# =========================
-
+# Main function to process all agenda segments
 def main():
     print(f">>> Using device: {DEVICE}")
 
@@ -166,10 +172,6 @@ def main():
     print(">>> Writing output to:", OUTPUT_CSV)
     save_agenda_with_transcripts(agenda_rows, OUTPUT_CSV)
     print(">>> Done.")
-
-# =========================
-# Entry point
-# =========================
 
 if __name__ == "__main__":
     main()

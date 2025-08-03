@@ -1,3 +1,8 @@
+# transcribe.py
+"""
+This script transcribes audio and performs speaker diarization, saving the results to a text file.
+"""
+
 print(">>> Importing...")
 
 import whisperx

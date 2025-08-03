@@ -1,3 +1,9 @@
+# webscrape.py
+"""
+This script scrapes the main page for records and a specific video page for agenda items.
+It saves the scraped data into CSV files.
+"""
+
 import requests
 from bs4 import BeautifulSoup
 import csv
@@ -6,6 +12,7 @@ from datetime import datetime
 
 # Function to scrape the main page for records
 def scrape_main_page(url, csv_filename="records.csv"):
+    """Scrape the main page for records and save to CSV"""
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
     rows = soup.select("table.sortable tbody tr")
@@ -39,6 +46,7 @@ def scrape_main_page(url, csv_filename="records.csv"):
 
 # Function to scrape a specific video page for agenda items
 def scrape_video_page(url, csv_filename="agendas.csv"):
+    """Scrape a video page for agenda items and save to CSV"""
     # Extract record ID from URL
     match = re.search(r"/clip/(\d+)", url)
     record_id = match.group(1) if match else ""
