@@ -37,6 +37,8 @@
             const searchForm = document.getElementById('search-form');
             const searchResults = document.getElementById('search-results');
             const resultsContainer = document.getElementById('results-container');
+            
+            const GRANICUS_VIDEO_URL = 'https://sanfrancisco.granicus.com/player/clip/50523?view_id=10&redirect=true';
 
             const sampleResults = [
                 {
@@ -87,7 +89,7 @@
                                         id="toggle-btn-${index}">
                                     Show Video
                                 </button>
-                                <a href="//sanfrancisco.granicus.com/player/clip/50523?view_id=10&entrytime=3600&stoptime=21600&autostart=0&embed=1" 
+                                <a href="${GRANICUS_VIDEO_URL}" 
                                    target="_blank" 
                                    class="usa-button usa-button--outline margin-left-1">
                                     Open in New Tab
@@ -95,18 +97,7 @@
                             </div>
                             <div id="video-container-${index}" class="margin-top-2" style="display: none;">
                                 <div id="video-embed-${index}" class="text-center">
-                                    <!-- Video will be loaded here -->
-                                </div>
-                                <div id="video-error-${index}" class="usa-alert usa-alert--warning margin-top-2" style="display: none;">
-                                    <div class="usa-alert__body">
-                                        <p class="usa-alert__text">
-                                            Video could not be loaded. This may be due to browser security settings or the video service. 
-                                            <a href="//sanfrancisco.granicus.com/player/clip/50523?view_id=10&entrytime=3600&stoptime=21600&autostart=0&embed=1" target="_blank">
-                                                Click here to view in a new tab
-                                            </a>.
-                                        </p>
                                     </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -117,27 +108,11 @@
             window.toggleVideo = function(index) {
                 const videoContainer = document.getElementById(`video-container-${index}`);
                 const videoEmbed = document.getElementById(`video-embed-${index}`);
-                const videoError = document.getElementById(`video-error-${index}`);
                 const toggleBtn = document.getElementById(`toggle-btn-${index}`);
                 
                 if (videoContainer.style.display === 'none') {
-                    if (videoEmbed.innerHTML === '') {
-                        const embedElement = document.createElement('embed');
-                        embedElement.width = '720px';
-                        embedElement.height = '480px';
-                        embedElement.frameBorder = '0';
-                        embedElement.allowFullscreen = 'true';
-                        embedElement.src = '//sanfrancisco.granicus.com/player/clip/50523?view_id=10&entrytime=3600&stoptime=21600&autostart=0&embed=1';
-                        
-                        embedElement.style.maxWidth = '100%';
-                        embedElement.style.height = 'auto';
-                        
-                        embedElement.onerror = function() {
-                            console.log('Embed failed to load');
-                            videoError.style.display = 'block';
-                        };
-                        
-                        videoEmbed.appendChild(embedElement);
+                    if (videoEmbed.innerHTML.trim() === '') {
+                        videoEmbed.innerHTML = `<embed width="720px" height="480px" frameborder="0" allowfullscreen="true" src="//sanfrancisco.granicus.com/player/clip/50523?view_id=10&redirect=true&stoptime=21600&autostart=720&entrytime=3600&stoptime=21600&autostart=1&embed=1"></embed>`;
                     }
                     
                     videoContainer.style.display = 'block';
@@ -149,7 +124,6 @@
                 } else {
                     videoContainer.style.display = 'none';
                     toggleBtn.textContent = 'Show Video';
-                    videoError.style.display = 'none';
                 }
             };
 
@@ -164,7 +138,6 @@
                 });
                 
                 searchResults.style.display = 'block';
-                
                 searchResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
         });

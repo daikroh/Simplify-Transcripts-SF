@@ -101,6 +101,9 @@ h2, h3, h4, h5, h6 {
     padding: 1rem 0;
     border-bottom: 4px solid var(--sf-action-blue);
     box-shadow: 0 2px 8px rgba(0, 43, 72, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 .sf-nav-menu {
@@ -196,6 +199,20 @@ a:hover, .usa-link:hover {
     color: var(--sf-white);
 }
 
+a.usa-button.usa-button--outline {
+    background-color: var(--sf-action-blue);
+    color: var(--sf-white) !important;
+    border-color: var(--sf-action-blue);
+    text-decoration: none;
+}
+
+a.usa-button.usa-button--outline:hover {
+    background-color: #6A7EE2; 
+    border-color: #6A7EE2;
+    color: var(--sf-white) !important;
+    text-decoration: none;
+}
+
 .usa-card {
     border: 1px solid var(--sf-slate-l1);
     box-shadow: 0 4px 16px rgba(0, 43, 72, 0.15);
@@ -227,6 +244,10 @@ a:hover, .usa-link:hover {
     outline: 2px solid var(--sf-action-blue);
     border-color: var(--sf-action-blue);
     background: rgba(255, 255, 255, 1);
+}
+
+.usa-search .usa-button .usa-search__submit-text {
+    color: inherit; 
 }
 
 /* alert overrides */
@@ -311,7 +332,6 @@ a:hover, .usa-link:hover {
     background: linear-gradient(45deg, rgba(73, 94, 212, 0.05) 0%, rgba(73, 94, 212, 0.1) 100%);
 }
 
-/* Main content styling */
 .usa-section {
     border-radius: 12px;
     margin: 2rem auto;
