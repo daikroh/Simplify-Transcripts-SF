@@ -398,23 +398,25 @@ a.usa-button.usa-button--outline:hover {
     outline-offset: 2px;
 }
 
+
 .usa-card {
-    overflow: visible !important;
-    margin-bottom: 2rem !important;
+    overflow: hidden !important; 
+    margin-bottom: 1.5rem !important; 
+    border-radius: 8px; 
 }
 
 .usa-card__container {
-    overflow: visible !important;
-    padding-bottom: 1rem !important;
+    overflow: hidden !important;
+    padding-bottom: 0 !important;
 }
 
 .usa-card__body {
-    padding: 1rem 1rem 2rem 1rem !important; 
-    overflow: visible !important;
+    padding: 1rem !important; 
+    overflow: hidden !important;
 }
 
 .usa-card__body .usa-button {
-    margin-bottom: 1rem !important;
+    margin-bottom: 0.5rem !important; /* Reduced from 1rem */
     margin-top: 0.5rem !important;
     display: inline-block !important;
     position: relative !important;
@@ -422,10 +424,11 @@ a.usa-button.usa-button--outline:hover {
 }
 
 .usa-card.margin-bottom-2 {
-    margin-bottom: 3rem !important;
+    margin-bottom: 1.5rem !important;
 }
 
 .usa-card__body button[onclick*="showDetailedView"] {
     padding: 0.75rem 1.5rem !important;
     min-height: 44px !important;
+    margin-bottom: 0 !important; 
 }
