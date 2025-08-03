@@ -10,6 +10,8 @@ import subprocess
 import copy
 from datetime import timedelta
 import time
+import os
+from dotenv import load_dotenv
 
 print(">>> Imports complete.")
 
@@ -64,7 +66,7 @@ def trim_audio(input_file, output_file, duration_seconds=300):
 # CONFIG
 AUDIO_FILE = "sanfrancisco_27e3a9ca-ed35-4520-a5c2-ccfee41a7671.mp3"
 MODEL_SIZE = "small"  # Options: tiny, base, small, medium, large
-HF_TOKEN = "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"
+HF_TOKEN = os.environ.get("HF_KEY")
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 print(f">>> DEVICE: {DEVICE}")

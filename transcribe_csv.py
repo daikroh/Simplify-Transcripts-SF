@@ -17,7 +17,7 @@ AUDIO_FILE = "sanfrancisco_27e3a9ca-ed35-4520-a5c2-ccfee41a7671.mp3"
 AGENDA_FILE = "agendas.csv"
 OUTPUT_CSV = "agendas_with_transcripts.csv"
 MODEL_SIZE = "small"
-HF_TOKEN = "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"
+HF_TOKEN = os.environ.get("HF_KEY")
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 TORCH_DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

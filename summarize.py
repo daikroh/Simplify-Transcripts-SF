@@ -1,26 +1,11 @@
-# import csv
-
-# def extract_and_write_transcripts(csv_path, output_path="test.txt"):
-#     with open(csv_path, newline='', encoding='utf-8') as csvfile, \
-#          open(output_path, "w", encoding='utf-8') as outfile:
-#         reader = csv.DictReader(csvfile)
-#         for row in reader:
-#             transcript = row.get("transcript", "").strip()
-#             if transcript:
-#                 outfile.write(f"Title: {row['title']}\n")
-#                 outfile.write(f"Start Time: {row['start_time']}\n")
-#                 outfile.write(f"End Time: {row['end_time']}\n")
-#                 outfile.write(transcript + "\n\n")  # double newline for separation
-
-# # Example usage
-# extract_and_write_transcripts("agendas_with_transcripts.csv")
-
 import csv
 import os
+from dotenv import load_dotenv
 from cerebras.cloud.sdk import Cerebras
 
 # Initialize Cerebras client
-client = Cerebras(api_key="csk-n3trvm5tfvj4rmnw64ehvy3yvnmhn2466r8d5k34n342k46x")
+load_dotenv()
+client = Cerebras(api_key=os.environ.get("CEREBRAS_KEY"))
 
 def summarize_with_cerebras(transcript: str, model="qwen-3-coder-480b") -> str:
     """Summarize a meeting transcript using Cerebras Cloud API"""
