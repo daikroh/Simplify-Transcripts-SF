@@ -14,7 +14,7 @@
                     <div class="text-center margin-bottom-4">
                         <form class="usa-search usa-search--big" role="search" id="search-form" style="max-width: 600px; margin: 0 auto;">
                             <label class="usa-sr-only" for="search-field">Search transcripts</label>
-                            <input class="usa-input" id="search-field" type="search" name="search" placeholder="Search SF meeting transcripts...">
+                            <input class="usa-input" id="search-field" type="search" name="search" placeholder="Search SF meeting transcripts by summary...">
                             <button class="usa-button" type="submit">
                                 <span class="usa-search__submit-text">Submit</span>
                             </button>
@@ -27,6 +27,14 @@
                         </div>
                     </div>
 
+                    <div id="loading" class="text-center margin-top-4" style="display: none;">
+                        <p>Searching...</p>
+                    </div>
+
+                    <div id="no-results" class="text-center margin-top-4" style="display: none;">
+                        <p>No results found. Try a different search term.</p>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -35,40 +43,21 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchForm = document.getElementById('search-form');
+            const searchField = document.getElementById('search-field');
             const searchResults = document.getElementById('search-results');
             const resultsContainer = document.getElementById('results-container');
-            
-            const GRANICUS_VIDEO_URL = 'https://sanfrancisco.granicus.com/player/clip/50523?view_id=10&redirect=true';
+            const loadingDiv = document.getElementById('loading');
+            const noResultsDiv = document.getElementById('no-results');
 
-            const sampleResults = [
-                {
-                    title: "Budget Committee Meeting - Infrastructure Discussion",
-                    timestamp: "2:30",
-                    description: "Committee discusses proposed infrastructure improvements and budget allocations for the upcoming fiscal year."
-                },
-                {
-                    title: "Planning Commission - Housing Development Review",
-                    timestamp: "5:10", 
-                    description: "Review of proposed housing development projects in District 4 and environmental impact assessments."
-                },
-                {
-                    title: "Board of Supervisors - Transportation Policy",
-                    timestamp: "4:45",
-                    description: "Discussion on new transportation policies and public transit improvements across the city."
-                },
-                {
-                    title: "Public Safety Committee - Community Policing",
-                    timestamp: "1:20",
-                    description: "Committee reviews community policing initiatives and public safety measures for neighborhoods."
-                },
-                {
-                    title: "Environmental Committee - Climate Action Plan",
-                    timestamp: "1:00",
-                    description: "Updates on the city's climate action plan and discussion of new environmental regulations."
-                }
-            ];
+            function formatTime(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            }
 
             function createResultCard(result, index) {
+                const videoUrl = `https://sanfrancisco.granicus.com/player/clip/${result.record_id}?view_id=10&redirect=true&stoptime=${result.end_time}&entrytime=${result.start_time}&autostart=1`;
+                
                 const resultCard = document.createElement('div');
                 resultCard.className = 'usa-card margin-bottom-4';
                 resultCard.innerHTML = `
@@ -79,17 +68,26 @@
                         <div class="usa-card__body">
                             <div class="margin-bottom-2">
                                 <span class="sf-text-secondary">
-                                    <strong>Time:</strong> ${result.timestamp}
+                                    <strong>Record ID:</strong> ${result.record_id}
                                 </span>
                             </div>
-                            <p class="margin-bottom-2">${result.description}</p>
+                            <div class="margin-bottom-2">
+                                <span class="sf-text-secondary">
+                                    <strong>Time Range:</strong> ${formatTime(result.start_time)} - ${formatTime(result.end_time)}
+                                </span>
+                            </div>
+                            <div class="margin-bottom-2">
+                                <span class="sf-text-secondary">
+                                    <strong>Summary:</strong> ${result.summary}
+                                </span>
+                            </div>
                             <div class="margin-bottom-2">
                                 <button class="usa-button usa-button--secondary" 
-                                        onclick="toggleVideo(${index})" 
+                                        onclick="toggleVideo(${index}, '${result.record_id}', ${result.start_time}, ${result.end_time})" 
                                         id="toggle-btn-${index}">
                                     Show Video
                                 </button>
-                                <a href="${GRANICUS_VIDEO_URL}" 
+                                <a href="${videoUrl}" 
                                    target="_blank" 
                                    class="usa-button usa-button--outline margin-left-1">
                                     Open in New Tab
@@ -97,7 +95,7 @@
                             </div>
                             <div id="video-container-${index}" class="margin-top-2" style="display: none;">
                                 <div id="video-embed-${index}" class="text-center">
-                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -105,14 +103,15 @@
                 return resultCard;
             }
 
-            window.toggleVideo = function(index) {
+            window.toggleVideo = function(index, recordId, startTime, endTime) {
                 const videoContainer = document.getElementById(`video-container-${index}`);
                 const videoEmbed = document.getElementById(`video-embed-${index}`);
                 const toggleBtn = document.getElementById(`toggle-btn-${index}`);
                 
                 if (videoContainer.style.display === 'none') {
                     if (videoEmbed.innerHTML.trim() === '') {
-                        videoEmbed.innerHTML = `<embed width="720px" height="480px" frameborder="0" allowfullscreen="true" src="//sanfrancisco.granicus.com/player/clip/50523?view_id=10&redirect=true&stoptime=21600&autostart=720&entrytime=3600&stoptime=21600&autostart=1&embed=1"></embed>`;
+                        const embedUrl = `//sanfrancisco.granicus.com/player/clip/${recordId}?view_id=10&redirect=true&stoptime=${endTime}&autostart=720&entrytime=${startTime}&stoptime=${endTime}&autostart=1&embed=1`;
+                        videoEmbed.innerHTML = `<embed width="720px" height="480px" frameborder="0" allowfullscreen="true" src="${embedUrl}"></embed>`;
                     }
                     
                     videoContainer.style.display = 'block';
@@ -127,12 +126,52 @@
                 }
             };
 
-            searchForm.addEventListener('submit', function(e) {
+            async function searchAPI(query) {
+                try {
+                    console.log(`Searching for: "${query}"`);
+                    
+                    const response = await fetch(`http://localhost:8001/api/direct-search/?q=${encodeURIComponent(query)}`);
+                    const data = await response.json();
+                    
+                    console.log('API Response:', data);
+                    
+                    if (response.ok) {
+                        return data.results || [];
+                    } else {
+                        console.error('API Error:', data);
+                        return [];
+                    }
+                } catch (error) {
+                    console.error('Search error:', error);
+                    return [];
+                }
+            }
+
+            searchForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
+                const query = searchField.value.trim();
+                if (!query) {
+                    alert('Please enter a search term');
+                    return;
+                }
+                
+                searchResults.style.display = 'none';
+                noResultsDiv.style.display = 'none';
+                loadingDiv.style.display = 'block';
                 resultsContainer.innerHTML = '';
                 
-                sampleResults.forEach((result, index) => {
+                const results = await searchAPI(query);
+                loadingDiv.style.display = 'none';
+                console.log(`Found ${results.length} results for "${query}"`);
+                console.log('Results:', results);
+                
+                if (results.length === 0) {
+                    noResultsDiv.style.display = 'block';
+                    return;
+                }
+                
+                results.forEach((result, index) => {
                     const resultCard = createResultCard(result, index);
                     resultsContainer.appendChild(resultCard);
                 });
