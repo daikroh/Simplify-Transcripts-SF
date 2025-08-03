@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Simply Transcripts SF{% endblock %}</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uswds/3.12.0/css/uswds.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uswds/3.12.0/js/uswds-init.min.js"></script>
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header class="sf-nav-header">
+        <div class="grid-container">
+            <nav class="sf-nav-menu">
+                <a href="{% url 'home' %}" class="nav-home">
+                    Simply Transcripts SF 
+                </a>
+                <div class="sf-nav-items">
+                    <a href="https://sanfrancisco.granicus.com/ViewPublisher.php?view_id=10" class="sf-nav-item" target="_blank" rel="noopener noreferrer">San Francisco Government TV</a>
+                    <a href="https://sfgov.civlab.org/" class="sf-nav-item" target="_blank" rel="noopener noreferrer">Gov Graph</a>
+                    <a href="https://github.com/daikroh/Simplify-Transcripts-SF" class="sf-nav-item" target="_blank" rel="noopener noreferrer">Repo</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uswds/3.13.0/js/uswds.min.js"></script>
+</body>
+</html>
