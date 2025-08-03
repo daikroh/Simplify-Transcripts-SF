@@ -19,7 +19,7 @@ index_section = soup.find("section", {"id": "index"})
 agenda_items = index_section.find_all("div", class_="index-point")
 
 # Open CSV for writing
-with open("agenda_items.csv", "w", newline="", encoding="utf-8") as csvfile:
+with open("agendas.csv", "w", newline="", encoding="utf-8") as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(["agenda_id", "record_id", "title", "start_time", "end_time"])
 
