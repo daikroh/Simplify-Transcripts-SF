@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'transcripts_api',
 ]
 
 MIDDLEWARE = [
@@ -75,20 +77,14 @@ WSGI_APPLICATION = 'simplify_transcripts.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-db_name = 'meetings'
-user = 'postgres'
-password = ''
-port = '5432'
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': db_name,
-        'USER': user,
-        'PASSWORD': password,
+        'NAME': 'meetings',
+        'USER': 'postgres',
+        'PASSWORD': '',
         'HOST': 'localhost',
-        'PORT': port,
+        'PORT': '5432',
     }
 }
 
