@@ -11,9 +11,10 @@ def combine_record_agenda(agenda_items):
     for item in agenda_items:
         agenda_map[item.record.record_id].append({
             'title': item.title,
-            'summary': item.summary,
             'start_time': item.start_time,
-            'end_time': item.end_time
+            'end_time': item.end_time,
+            'summary': item.summary,
+            'transcript': item.transcript
         })
 
     record_ids = list(agenda_map.keys())
