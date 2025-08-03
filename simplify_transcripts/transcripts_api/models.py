@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 from pgvector.django import VectorField
 
 
@@ -21,6 +22,8 @@ class AgendaItem(models.Model):
     end_time = models.IntegerField()
     summary = models.TextField()
     transcript = models.TextField()
+    
+    embeddings = VectorField(null=True, blank=True)
 
     def __str__(self):
         return self.title

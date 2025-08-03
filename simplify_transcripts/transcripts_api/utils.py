@@ -1,6 +1,8 @@
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import Q
+from django.db.models.expressions import RawSQL
 from .models import Record, AgendaItem
+from .preprocessing import get_embedding, update_embeddings
 from collections import defaultdict
 from rest_framework.response import Response
 
@@ -38,6 +40,8 @@ def combine_record_agenda(agenda_items):
 
 
 def search(query):
+    # update_embeddings()
+    
     # Partial match with summary
     agenda_items = (
         AgendaItem.objects.annotate(similarity=TrigramSimilarity("summary", query))
@@ -49,9 +53,16 @@ def search(query):
         # Partial match with title
         agenda_items = (
             AgendaItem.objects.annotate(similarity=TrigramSimilarity("title", query))
-            .filter(similarity__gt=0.04)  # Similarity threshold
+            .filter(similarity__gt=0.03)  # Similarity threshold
             .order_by("-similarity")
         )
+        
+    if not agenda_items.exists():
+        query_embedding = get_embedding(query)
+
+        qs = AgendaItem.objects.annotate(
+            similarity=RawSQL("embeddings <#> %s", (query_embedding,))
+        ).order_by("-similarity")[:5]
 
     if not agenda_items.exists():
         agenda_items = AgendaItem.objects.filter(

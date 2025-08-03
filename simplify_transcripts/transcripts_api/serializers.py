@@ -1,6 +1,4 @@
 from rest_framework import serializers
-from django.contrib.postgres.search import SearchVectorField
-from django.contrib.postgres.indexes import GinIndex
 from .models import Record, AgendaItem
 
 
@@ -23,6 +21,7 @@ class AgendaItemSerializer(serializers.ModelSerializer):
             "end_time",
             "summary",
             "transcript",
+            "embeddings",
         ]
 
 
