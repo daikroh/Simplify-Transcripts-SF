@@ -21,20 +21,9 @@
                         </form>
                     </div>
 
-                    <div id="video-container" class="text-center margin-top-4" style="display: none;">
-                        <div class="usa-card">
-                            <div class="usa-card__container">
-                                <div class="usa-card__header">
-                                    <h2 class="usa-card__heading">SF Government Meeting</h2>
-                                </div>
-                                <div class="usa-card__body">
-                                    <div id="video-embed-wrapper" class="margin-bottom-2">
-                                    </div>
-                                    <button class="usa-button usa-button--unstyled" id="hide-video-btn" type="button">
-                                        Hide Video
-                                    </button>
-                                </div>
-                            </div>
+                    <div id="search-results" class="margin-top-4" style="display: none;">
+                        <h2 class="font-heading-xl margin-bottom-4">Search Results</h2>
+                        <div id="results-container">
                         </div>
                     </div>
 
@@ -46,32 +35,112 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchForm = document.getElementById('search-form');
-            const hideVideoBtn = document.getElementById('hide-video-btn');
-            const videoContainer = document.getElementById('video-container');
-            const videoEmbedWrapper = document.getElementById('video-embed-wrapper');
+            const searchResults = document.getElementById('search-results');
+            const resultsContainer = document.getElementById('results-container');
+
+            const sampleResults = [
+                {
+                    title: "Budget Committee Meeting - Infrastructure Discussion",
+                    timestamp: "2:30",
+                    description: "Committee discusses proposed infrastructure improvements and budget allocations for the upcoming fiscal year."
+                },
+                {
+                    title: "Planning Commission - Housing Development Review",
+                    timestamp: "5:10", 
+                    description: "Review of proposed housing development projects in District 4 and environmental impact assessments."
+                },
+                {
+                    title: "Board of Supervisors - Transportation Policy",
+                    timestamp: "4:45",
+                    description: "Discussion on new transportation policies and public transit improvements across the city."
+                },
+                {
+                    title: "Public Safety Committee - Community Policing",
+                    timestamp: "1:20",
+                    description: "Committee reviews community policing initiatives and public safety measures for neighborhoods."
+                },
+                {
+                    title: "Environmental Committee - Climate Action Plan",
+                    timestamp: "1:00",
+                    description: "Updates on the city's climate action plan and discussion of new environmental regulations."
+                }
+            ];
+
+            function createResultCard(result, index) {
+                const resultCard = document.createElement('div');
+                resultCard.className = 'usa-card margin-bottom-4';
+                resultCard.innerHTML = `
+                    <div class="usa-card__container">
+                        <div class="usa-card__header">
+                            <h3 class="usa-card__heading">${result.title}</h3>
+                        </div>
+                        <div class="usa-card__body">
+                            <div class="margin-bottom-2">
+                                <span class="sf-text-secondary">
+                                    <strong>Time:</strong> ${result.timestamp}
+                                </span>
+                            </div>
+                            <p class="margin-bottom-2">${result.description}</p>
+                            <div class="margin-bottom-2">
+                                <button class="usa-button usa-button--secondary" 
+                                        onclick="toggleVideo(${index})" 
+                                        id="toggle-btn-${index}">
+                                    Show Video
+                                </button>
+                            </div>
+                            <div id="video-container-${index}" class="margin-top-2" style="display: none;">
+                                <div id="video-embed-${index}" class="text-center">
+                                    <!-- Video will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                return resultCard;
+            }
+
+            window.toggleVideo = function(index) {
+                const videoContainer = document.getElementById(`video-container-${index}`);
+                const videoEmbed = document.getElementById(`video-embed-${index}`);
+                const toggleBtn = document.getElementById(`toggle-btn-${index}`);
+                
+                if (videoContainer.style.display === 'none') {
+                    if (videoEmbed.innerHTML === '') {
+                        const embedElement = document.createElement('embed');
+                        embedElement.width = '720px';
+                        embedElement.height = '480px';
+                        embedElement.frameborder = '0';
+                        embedElement.allowfullscreen = 'true';
+                        embedElement.src = '//sanfrancisco.granicus.com/player/clip/50523?view_id=10&redirect=true&stoptime=3000&autostart=720&entrytime=3600&stoptime=3000&autostart=0&embed=1';
+                        embedElement.style.maxWidth = '100%';
+                        embedElement.style.height = 'auto';
+                        
+                        videoEmbed.appendChild(embedElement);
+                    }
+                    
+                    videoContainer.style.display = 'block';
+                    toggleBtn.textContent = 'Hide Video';
+                    
+                    videoContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    videoContainer.style.display = 'none';
+                    toggleBtn.textContent = 'Show Video';
+                }
+            };
 
             searchForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                const embedElement = document.createElement('embed');
-                embedElement.width = '720px';
-                embedElement.height = '480px';
-                embedElement.frameborder = '0';
-                embedElement.allowfullscreen = 'true';
-                embedElement.src = '//sanfrancisco.granicus.com/player/clip/50523?view_id=10&redirect=true&stoptime=3000&autostart=720&entrytime=3600&stoptime=3000&autostart=0&embed=1';
-                embedElement.style.maxWidth = '100%';
-                embedElement.style.height = 'auto';
-
-                videoEmbedWrapper.innerHTML = '';
-                videoEmbedWrapper.appendChild(embedElement);
-
-                videoContainer.style.display = 'block';
-                videoContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            });
-
-            hideVideoBtn.addEventListener('click', function() {
-                videoContainer.style.display = 'none';
-                videoEmbedWrapper.innerHTML = '';
+                resultsContainer.innerHTML = '';
+                
+                sampleResults.forEach((result, index) => {
+                    const resultCard = createResultCard(result, index);
+                    resultsContainer.appendChild(resultCard);
+                });
+                
+                searchResults.style.display = 'block';
+                
+                searchResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
         });
     </script>
