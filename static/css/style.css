@@ -23,7 +23,6 @@ body {
     position: relative;
 }
 
-/* Background image with overlay */
 body::before {
     content: '';
     position: fixed;
@@ -397,4 +396,36 @@ a.usa-button.usa-button--outline:hover {
 *:focus {
     outline: 2px solid var(--sf-action-blue);
     outline-offset: 2px;
+}
+
+.usa-card {
+    overflow: visible !important;
+    margin-bottom: 2rem !important;
+}
+
+.usa-card__container {
+    overflow: visible !important;
+    padding-bottom: 1rem !important;
+}
+
+.usa-card__body {
+    padding: 1rem 1rem 2rem 1rem !important; 
+    overflow: visible !important;
+}
+
+.usa-card__body .usa-button {
+    margin-bottom: 1rem !important;
+    margin-top: 0.5rem !important;
+    display: inline-block !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+.usa-card.margin-bottom-2 {
+    margin-bottom: 3rem !important;
+}
+
+.usa-card__body button[onclick*="showDetailedView"] {
+    padding: 0.75rem 1.5rem !important;
+    min-height: 44px !important;
 }

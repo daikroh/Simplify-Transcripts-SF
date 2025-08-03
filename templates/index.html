@@ -227,8 +227,8 @@
             }
 
             function createDetailedView(result, index) {
-                const videoUrl = `//sanfrancisco.granicus.com/player/clip/${result.record_id}?view_id=10&redirect=true&stoptime=${result.end_time}&autostart=720&entrytime=${result.start_time}&autostart=1&embed=1`;
-                const externalUrl = `https://sanfrancisco.granicus.com/player/clip/${result.record_id}?view_id=10&redirect=true&stoptime=${result.end_time}&entrytime=${result.start_time}&autostart=1`;
+                const videoUrl = `//sanfrancisco.granicus.com/player/clip/${result.record_id}?view_id=10&redirect=true&stoptime=${result.end_time}&autostart=720&entrytime=${result.start_time}&autostart=0&embed=1`;
+                const externalUrl = `https://sanfrancisco.granicus.com/player/clip/${result.record_id}?view_id=10&redirect=true&stoptime=${result.end_time}&entrytime=${result.start_time}&autostart=0`;
                 
                 return `
                     <div class="detailed-view" id="detailed-view-${index}">
