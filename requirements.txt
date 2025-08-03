@@ -76,6 +76,7 @@ Pygments==2.19.2
 pyparsing==3.2.3
 pyreadline3==3.5.4
 python-dateutil==2.9.0.post0
+python-dotenv==1.1.1
 pytorch-lightning==2.5.2
 pytorch-metric-learning==2.8.1
 pytz==2025.2
