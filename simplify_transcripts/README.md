@@ -50,6 +50,11 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
+To enter database:
+```
+psql -U postgres -d meetings
+```
+
 To create the databases:
 ```
 python manage.py makemigrations
