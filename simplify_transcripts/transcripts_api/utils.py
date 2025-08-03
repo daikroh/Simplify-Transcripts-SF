@@ -39,12 +39,35 @@ def combine_record_agenda(agenda_items):
     return results
 
 
+def flatten_agenda_items_with_record_info(agenda_items):
+    """
+    Convert agenda items to flat structure with record info included
+    """
+    results = []
+    
+    for item in agenda_items:
+        results.append({
+            "agenda_id": str(item.agenda_id),
+            "record_id": item.record.record_id,
+            "title": item.title,
+            "start_time": item.start_time,
+            "end_time": item.end_time,
+            "summary": item.summary,
+            "transcript": item.transcript,
+            "view_id": item.record.view_id,
+            "published_date": item.record.published_date,
+        })
+    
+    return results
+
+
 def search(query):
     # update_embeddings()
     
     # Partial match with summary
     agenda_items = (
-        AgendaItem.objects.annotate(similarity=TrigramSimilarity("summary", query))
+        AgendaItem.objects.select_related('record')
+        .annotate(similarity=TrigramSimilarity("summary", query))
         .filter(similarity__gt=0.03)  # Similarity threshold
         .order_by("-similarity")    
     )
@@ -52,7 +75,8 @@ def search(query):
     if not agenda_items.exists():
         # Partial match with title
         agenda_items = (
-            AgendaItem.objects.annotate(similarity=TrigramSimilarity("title", query))
+            AgendaItem.objects.select_related('record')
+            .annotate(similarity=TrigramSimilarity("title", query))
             .filter(similarity__gt=0.03)  # Similarity threshold
             .order_by("-similarity")
         )
@@ -60,16 +84,17 @@ def search(query):
     if not agenda_items.exists():
         query_embedding = get_embedding(query)
 
-        qs = AgendaItem.objects.annotate(
+        agenda_items = AgendaItem.objects.select_related('record').annotate(
             similarity=RawSQL("embeddings <#> %s", (query_embedding,))
         ).order_by("-similarity")[:5]
 
     if not agenda_items.exists():
-        agenda_items = AgendaItem.objects.filter(
+        agenda_items = AgendaItem.objects.select_related('record').filter(
             Q(title__icontains=query) | Q(summary__icontains=query)
         )
 
-    results = combine_record_agenda(agenda_items)
+    # Return flat structure instead of nested
+    results = flatten_agenda_items_with_record_info(agenda_items)
     return Response(results)
 
 
